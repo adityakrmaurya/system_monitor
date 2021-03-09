@@ -1,7 +1,5 @@
 #pragma once
-
 #include <string>
-
 enum CPUStates {
   S_USER = 1,
   S_NICE = 1,
@@ -14,29 +12,13 @@ enum CPUStates {
   S_GUEST,
   S_GUEST_NICE
 };
-
 class Path {
-  public:
-    static std::string base_path() {
-      return "/proc/";
-    }
-    static std::string cmd_path() {
-      return "/cmdline";
-    }
-    static std::string status_path() {
-      return "/status"
-    }
-    static std::string stat_path() {
-      return "stat";
-    }
-    static std::string up_time_path() {
-      return "uptime";
-    }
-    static std::string mem_info_path() {
-      return "meminfo";
-    }
-    static std::string version_path() {
-      return "version";
-    }
+ public:
+  static std::string BasePath() { return "/proc/"; }
+  static std::string CmdPath() { return "/cmdline"; }
+  static std::string StatusPath() { return "/status"; }
+  static std::string StatPath() { return "stat"; }
+  static std::string UpTimePath() { return "uptime"; }
+  static std::string MemInfoPath() { return "meminfo"; }
+  static std::string VersionPath() { return "version"; }
 };
-
