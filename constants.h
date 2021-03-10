@@ -17,7 +17,7 @@ class Path {
   static std::string BasePath() { return "/proc/"; }
   static std::string CmdPath() { return "/cmdline"; }
   static std::string StatusPath() { return "/status"; }
-  static std::string StatPath() { return "stat"; }
+  static std::string StatPath() { return "/stat"; }
   static std::string UpTimePath() { return "uptime"; }
   static std::string MemInfoPath() { return "meminfo"; }
   static std::string VersionPath() { return "version"; }
