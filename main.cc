@@ -30,6 +30,7 @@ class ProcessParser {
   static std::string GetVmSize(std::string pid);
   // Returns the cpu usage for `pid`
   static std::string GetCpuPercent(std::string pid);
+  // Returns the uptime for system
   static long int GetSysUpTime();
   static std::string GetProcUser(std::string pid);
   static std::vector<std::string> GetSysCpuPercent(std::string coreNumber);
@@ -82,7 +83,6 @@ std::string ProcessParser::GetVmSize(std::string pid) {
   }
   return std::to_string(std::stof(line) / 1024.0);
 }
-
 std::string ProcessParser::GetCpuPercent(std::string pid) {
   // Path of stat file
   std::string path = Path::BasePath() + pid + Path::StatPath();
@@ -121,12 +121,26 @@ std::string ProcessParser::GetCpuPercent(std::string pid) {
   float percentage_cpu = 100.0 * ((total_time / freq) / second);
   return std::to_string(percentage_cpu);
 }
+long int ProcessParser::GetSysUpTime() {
+  // Path of the file containing uptime
+  std::string path = Path::BasePath() + Path::UpTimePath();
+  // reads the path data into stream
+  std::ifstream stream = Util::GetStream(path);
+  // Processing stream
+  std::string line;
+  getline(stream, line);
+  std::istringstream iss(line);
+  std::vector<std::string> vs((std::istream_iterator<std::string>(iss)),
+                              std::istream_iterator<std::string>());
+  return stoi(vs[0]);
+}
 int main() {
   // simple tests
-  std::cout << ProcessParser::GetCmd("1") << std::endl;
-  std::vector<std::string> vs = ProcessParser::GetPidList();
-  for (auto& a : vs) {
-    std::cout << a << std::endl;
-  }
-  std::cout << ProcessParser::GetVmSize("2847");
+  // std::cout << ProcessParser::GetCmd("1") << std::endl;
+  // std::vector<std::string> vs = ProcessParser::GetPidList();
+  // for (auto& a : vs) {
+  //   std::cout << a << std::endl;
+  // }
+  // std::cout << ProcessParser::GetVmSize("1");
+  std::cout << ProcessParser::GetSysUpTime() << std::endl;
 }
