@@ -82,6 +82,45 @@ std::string ProcessParser::GetVmSize(std::string pid) {
   }
   return std::to_string(std::stof(line) / 1024.0);
 }
+
+std::string ProcessParser::GetCpuPercent(std::string pid) {
+  // Path of stat file
+  std::string path = Path::BasePath() + pid + Path::StatPath();
+  // reads the file in a stream
+  std::ifstream stream = Util::GetStream(path);
+  // variable to store the stream
+  std::string line;
+  std::getline(stream, line);
+  // Parsing the string
+  std::istringstream iss(line);
+  std::vector<std::string> result((std::istream_iterator<std::string>(iss)),
+                                  std::istream_iterator<std::string>());
+  // acquiring relevant times for calculation of active occupation of CPU for
+  // pid utime: Amount of time that this process has been scheduled in user
+  // mode, measured in clock ticks.
+  float utime = std::stof(result[13]);
+  // stime: Amount of time that this process hs been scheduled in kernel mode,
+  // measured in clock ticks.
+  float stime = std::stof(result[14]);
+  // cutime: Amount of time that this process's waited-for children have been
+  // scheduled in user mode, measured in clock ticks
+  float cutime = std::stof(result[15]);
+  // cstime: Amount of time that this process's waited-for children have been
+  // scheduled in kernel mode, mesured in clock ticks
+  float cstime = std::stof(result[16]);
+  // starttime: The time the process started after system boot.
+  float starttime = std::stof(result[21]);
+  // freq: measures the number of cycles CPU executes per second
+  float freq = sysconf(_SC_CLK_TCK);
+  // uptime: time system booted
+  float uptime = ProcessParser::GetSysUpTime();
+  // Total time: sum of kernel and user time
+  float total_time = utime + stime + cutime + cstime;
+  float second = uptime - (starttime / freq);
+  // result: percentage of cpu usage
+  float percentage_cpu = 100.0 * ((total_time / freq) / second);
+  return std::to_string(percentage_cpu);
+}
 int main() {
   // simple tests
   std::cout << ProcessParser::GetCmd("1") << std::endl;
