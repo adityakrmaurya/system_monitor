@@ -32,6 +32,7 @@ class ProcessParser {
   static std::string GetCpuPercent(std::string pid);
   // Returns the uptime for system
   static long int GetSysUpTime();
+  // Returns the user of the process with the input `pid`
   static std::string GetProcUser(std::string pid);
   static std::vector<std::string> GetSysCpuPercent(std::string coreNumber);
   static float GetSysPercent();
@@ -134,6 +135,47 @@ long int ProcessParser::GetSysUpTime() {
                               std::istream_iterator<std::string>());
   return stoi(vs[0]);
 }
+std::string ProcessParser::GetProcUser(std::string pid) {
+  // Path of the file containing the status
+  std::string path = Path::BasePath() + pid + Path::StatusPath();
+  // reads the path data into stream
+  std::ifstream stream{Util::GetStream(path)};
+  // variable to store the line of stream
+  std::string line;
+  // stores the user_id for the process_id
+  std::string uid;
+  // iterating and searching for the username
+  while (getline(stream, line)) {
+    std::istringstream iss(line);
+    std::vector<std::string> vs((std::istream_iterator<std::string>(iss)),
+                                std::istream_iterator<std::string>());
+    if (vs[0] == "Uid:") {
+      uid = vs[1];
+      break;
+    }
+  }
+  // stores the username for the pid
+  std::string username;
+  // reads the path data into stream
+  stream = Util::GetStream("/etc/passwd");
+  // stores stream data
+  std::vector<std::string> vs;
+  // searching for username for the uid
+  while (getline(stream, line)) {
+    std::istringstream iss(line);
+    std::string word;
+    // partition the stream iss on basis of ':'
+    while (getline(iss, word, ':')) {
+      vs.push_back(word);
+      if (word == uid) {
+        username = *(vs.end() - 3);
+        break;
+      }
+    }
+  }
+  return username;
+}
+
 int main() {
   // simple tests
   // std::cout << ProcessParser::GetCmd("1") << std::endl;
@@ -142,5 +184,6 @@ int main() {
   //   std::cout << a << std::endl;
   // }
   // std::cout << ProcessParser::GetVmSize("1");
-  std::cout << ProcessParser::GetSysUpTime() << std::endl;
+  // std::cout << ProcessParser::GetSysUpTime() << std::endl;
+  std::cout << ProcessParser::GetProcUser("1");
 }
