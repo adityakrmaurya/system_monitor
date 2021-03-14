@@ -22,7 +22,7 @@ std::string Util::ConvertToTime(long int input_seconds) {
 }
 // constructing string for given percentage
 // 50 bars to uniformly distributed 0 - 100%
-// input: percentage
+// input: percentage as a string
 // output: prints the bars
 std::string Util::GetProgressBar(std::string percent) {
   std::string result = "0%";
@@ -39,7 +39,7 @@ std::string Util::GetProgressBar(std::string percent) {
   return result;
 }
 // input: path of file
-// output: file
+// output: file stream
 // wrapper for creating streams
 std::ifstream Util::GetStream(std::string path) {
   std::ifstream stream(path);
